@@ -12,3 +12,10 @@ spring:
       path: /h2
   profiles:
     include:
+adapters:
+  r2dbc:
+    host: localhost
+    port: 5432
+    password: root
+    database: postgre
+    schema: franchise
