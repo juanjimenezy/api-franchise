@@ -1,7 +1,9 @@
 package co.com.nequi.franchise.r2dbc;
 
 import co.com.nequi.franchise.model.franchise.Franchise;
+import co.com.nequi.franchise.r2dbc.adapter.MyReactiveRepositoryAdapter;
 import co.com.nequi.franchise.r2dbc.entity.FranchiseEntity;
+import co.com.nequi.franchise.r2dbc.repository.MyReactiveRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,13 +33,13 @@ class MyReactiveRepositoryAdapterTest {
     @Test
     void mustFindValueById() {
         FranchiseEntity franchise = new FranchiseEntity(1L, "test");
-        when(repository.findById("1")).thenReturn(Mono.just(franchise));
+        when(repository.findById(1L)).thenReturn(Mono.just(franchise));
         when(mapper.map(any(Franchise.class), any())).thenReturn("test");
         when(mapper.map("test", Object.class)).thenReturn("test");
         when(mapper.map(any(Franchise.class), any())).thenReturn("test");
         when(mapper.map("test", Object.class)).thenReturn("test");
 
-        Mono<Franchise> result = repositoryAdapter.findById("1");
+        Mono<Franchise> result = repositoryAdapter.findById(1L);
 
         StepVerifier.create(result)
                 .expectNextMatches(value -> value.getName().equals("test") && value.getId().equals(1L))

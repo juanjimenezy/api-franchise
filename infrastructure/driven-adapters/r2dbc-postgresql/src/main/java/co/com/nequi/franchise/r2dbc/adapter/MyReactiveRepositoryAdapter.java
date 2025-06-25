@@ -1,7 +1,8 @@
-package co.com.nequi.franchise.r2dbc;
+package co.com.nequi.franchise.r2dbc.adapter;
 
 import co.com.nequi.franchise.model.franchise.Franchise;
 import co.com.nequi.franchise.model.franchise.gateways.FranchiseRepository;
+import co.com.nequi.franchise.r2dbc.repository.MyReactiveRepository;
 import co.com.nequi.franchise.r2dbc.entity.FranchiseEntity;
 import co.com.nequi.franchise.r2dbc.helper.ReactiveAdapterOperations;
 import org.reactivecommons.utils.ObjectMapper;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Repository
-public class MyReactiveRepositoryAdapter extends ReactiveAdapterOperations<Franchise, FranchiseEntity, String, MyReactiveRepository> implements FranchiseRepository {
+public class MyReactiveRepositoryAdapter extends ReactiveAdapterOperations<Franchise, FranchiseEntity, Long, MyReactiveRepository> implements FranchiseRepository {
 
     public MyReactiveRepositoryAdapter(MyReactiveRepository repository, ObjectMapper mapper) {
         super(repository, mapper, d -> mapper.map(d, Franchise.class));
