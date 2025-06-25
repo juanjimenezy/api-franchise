@@ -9,7 +9,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @Getter
 @Setter
-@Table("users")
+@Table("franchise")
 @AllArgsConstructor
 public class FranchiseEntity {
     @Id

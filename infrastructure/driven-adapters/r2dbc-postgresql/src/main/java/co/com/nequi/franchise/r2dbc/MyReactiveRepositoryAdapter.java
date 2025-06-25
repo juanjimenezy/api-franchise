@@ -22,6 +22,8 @@ public class MyReactiveRepositoryAdapter extends ReactiveAdapterOperations<Franc
 
     @Override
     public Mono<Franchise> saveFranchise(Franchise franchise) {
-        return null;
+        FranchiseEntity entity = mapper.map(franchise, FranchiseEntity.class);
+        return repository.save(entity)
+                .map(savedEntity -> mapper.map(savedEntity, Franchise.class));
     }
 }

@@ -17,5 +17,6 @@ adapters:
     host: localhost
     port: 5432
     password: root
-    database: postgre
+    database: postgres
     schema: franchise
+    username: postgres
