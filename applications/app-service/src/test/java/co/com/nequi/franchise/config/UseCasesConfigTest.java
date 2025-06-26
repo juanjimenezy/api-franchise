@@ -1,6 +1,9 @@
 package co.com.nequi.franchise.config;
 
+import co.com.nequi.franchise.model.franchise.gateways.FranchiseRepository;
+import co.com.nequi.franchise.usecase.franchise.FranchiseUseCase;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,8 +34,13 @@ public class UseCasesConfigTest {
     static class TestConfig {
 
         @Bean
-        public MyUseCase myUseCase() {
-            return new MyUseCase();
+        public FranchiseRepository franchiseRepository() {
+            return Mockito.mock(FranchiseRepository.class);
+        }
+
+        @Bean
+        public FranchiseUseCase franchiseUseCase(FranchiseRepository franchiseRepository) {
+            return new FranchiseUseCase(franchiseRepository);
         }
     }
 
