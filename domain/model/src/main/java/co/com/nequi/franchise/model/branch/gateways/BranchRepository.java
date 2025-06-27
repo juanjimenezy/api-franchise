@@ -6,6 +6,7 @@ import reactor.core.publisher.Mono;
 
 public interface BranchRepository {
     Flux<Branch> findAll();
+    Flux<Branch> findAllByFranchiseId(Long franchiseId);
     Mono<Branch> findById(Long id);
     Mono<Branch> saveBranch(Branch branch);
 }

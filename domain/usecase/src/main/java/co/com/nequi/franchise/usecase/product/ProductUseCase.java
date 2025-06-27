@@ -47,8 +47,18 @@ public class ProductUseCase {
                                 .max(Comparator.comparingInt(Product::getStock))
                                 .orElse(null)
                         )
-                )
-                .filter(Objects::nonNull);
+                ).filter(Objects::nonNull);
+    }
+
+    public Flux<Product> getProductsByFranchiseIdAndMaxStock(Long franchiseId) {
+        return branchRepository.findAllByFranchiseId(franchiseId)
+                .flatMap(branch -> productRepository.findAllByBranchId(branch.getId())
+                        .collectList()
+                        .mapNotNull(products -> products.stream()
+                                .max(Comparator.comparingInt(Product::getStock))
+                                .orElse(null)
+                        )
+                ).filter(Objects::nonNull);
     }
 
     public Mono<Product> updateProductName(Long id, String name) {

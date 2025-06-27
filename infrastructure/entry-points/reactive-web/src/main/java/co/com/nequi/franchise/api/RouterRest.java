@@ -39,6 +39,7 @@ public class RouterRest {
                 .andRoute(POST(endpointApiProduct.concat("/stock/{id}")), productHandler::changeProductAmount)
                 .andRoute(DELETE(endpointApiProduct.concat("/{id}")), productHandler::deleteProduct)
                 .andRoute(PUT(endpointApiProduct.concat("/{id}")), productHandler::updateProductName)
-                .andRoute(GET(endpointApiProduct.concat("/maxStock/prueba")), productHandler::getProductsWithMaxStockByBranch);
+                .andRoute(GET(endpointApiProduct.concat("/maxStock/products")), productHandler::getProductsWithMaxStockByBranch)
+                .andRoute(GET(endpointApiProduct.concat("/franchise/maxStock/{id}")), productHandler::getProductsByFranchiseIdAndMaxStock);
     }
 }
