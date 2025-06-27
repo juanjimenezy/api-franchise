@@ -30,3 +30,9 @@ management:
         enabled: true
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
+
+api:
+  endpoint:
+    franchise: "/api/franchise"
+    branch: "/api/branch"
+    product: "/api/product"
