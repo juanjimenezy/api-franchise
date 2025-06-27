@@ -1,47 +1,156 @@
-# Proyecto Base Implementando Clean Architecture
+# API Franchise - Sistema de Gestión de Franquicias
 
-## Antes de Iniciar
+## Descripción
 
-Empezaremos por explicar los diferentes componentes del proyectos y partiremos de los componentes externos, continuando con los componentes core de negocio (dominio) y por último el inicio y configuración de la aplicación.
+API REST para la gestión de franquicias, sucursales y productos implementada con Clean Architecture y programación reactiva usando Spring Boot y Project Reactor.
 
-Lee el artículo [Clean Architecture — Aislando los detalles](https://medium.com/bancolombia-tech/clean-architecture-aislando-los-detalles-4f9530f35d7a)
+## Cómo Ejecutar la Aplicación
 
-# Arquitectura
+### Prerrequisitos
+- Java 17 o superior
+- Gradle (incluido wrapper)
 
-![Clean Architecture](https://miro.medium.com/max/1400/1*ZdlHz8B0-qu9Y-QO3AXR_w.png)
+### Ejecución
 
-## Domain
+```bash  
+# Usando Gradle Wrapper (recomendado)  [header-1](#header-1)
+./gradlew bootRun  
+  
+# O compilar y ejecutar el JAR  [header-2](#header-2)
+./gradlew build  
+java -jar applications/app-service/build/libs/app-service.jar
 
-Es el módulo más interno de la arquitectura, pertenece a la capa del dominio y encapsula la lógica y reglas del negocio mediante modelos y entidades del dominio.
+```
 
-## Usecases
+# Estructura de la API
 
-Este módulo gradle perteneciente a la capa del dominio, implementa los casos de uso del sistema, define lógica de aplicación y reacciona a las invocaciones desde el módulo de entry points, orquestando los flujos hacia el módulo de entities.
+## Arquitectura: Clean Architecture
 
-## Infrastructure
+La aplicación sigue los principios de **Clean Architecture**, con una separación estricta de responsabilidades entre capas.
 
-### Helpers
+---
 
-En el apartado de helpers tendremos utilidades generales para los Driven Adapters y Entry Points.
+## Capas de la Arquitectura
 
-Estas utilidades no están arraigadas a objetos concretos, se realiza el uso de generics para modelar comportamientos
-genéricos de los diferentes objetos de persistencia que puedan existir, este tipo de implementaciones se realizan
-basadas en el patrón de diseño [Unit of Work y Repository](https://medium.com/@krzychukosobudzki/repository-design-pattern-bc490b256006)
+### 1. Domain (Dominio)
 
-Estas clases no puede existir solas y debe heredarse su compartimiento en los **Driven Adapters**
+- **Entities:**  
+  Modelos de negocio como:
+    - `Franchise`
+    - `Branch`
+    - `Product`
 
-### Driven Adapters
+- **Use Cases:**  
+  Contiene la lógica de aplicación y los casos de uso.
 
-Los driven adapter representan implementaciones externas a nuestro sistema, como lo son conexiones a servicios rest,
-soap, bases de datos, lectura de archivos planos, y en concreto cualquier origen y fuente de datos con la que debamos
-interactuar.
+- **Repository Gateways:**  
+  Interfaces o contratos para el acceso a los datos.
 
-### Entry Points
+---
 
-Los entry points representan los puntos de entrada de la aplicación o el inicio de los flujos de negocio.
+### 2. Infrastructure (Infraestructura)
 
-## Application
+- **Entry Points:**  
+  Controladores REST (API Controllers).
 
-Este módulo es el más externo de la arquitectura, es el encargado de ensamblar los distintos módulos, resolver las dependencias y crear los beans de los casos de use (UseCases) de forma automática, inyectando en éstos instancias concretas de las dependencias declaradas. Además inicia la aplicación (es el único módulo del proyecto donde encontraremos la función “public static void main(String[] args)”.
+- **Driven Adapters:**  
+  Implementaciones concretas de los repositorios definidos en el dominio.
 
-**Los beans de los casos de uso se disponibilizan automaticamente gracias a un '@ComponentScan' ubicado en esta capa.**
+- **Helpers:**  
+  Clases utilitarias y funciones compartidas.
+
+---
+
+### 3. Application (Aplicación)
+
+- **Configuración de Spring Boot:**  
+  Manejo de propiedades y configuración del framework.
+
+- **Inyección de dependencias automática:**  
+  Gestión automática de beans y componentes.
+
+- **Punto de entrada principal:**  
+  Clase principal que inicia la aplicación.
+
+
+## Estructura de modulos
+```bash  
+api-franchise/  
+├── domain/  
+│   ├── model/           # Entidades y gateways  
+│   └── usecase/         # Casos de uso  
+├── infrastructure/  
+│   ├── driven-adapters/ # Implementaciones de repositorios  
+│   ├── entry-points/    # Controladores REST  
+│   └── helpers/         # Utilidades  
+└── applications/  
+    └── app-service/     # Aplicación Spring Boot  
+
+```
+
+
+# Programación Reactiva
+
+La API utiliza **Project Reactor** para realizar operaciones no bloqueantes:
+
+- Todos los repositorios retornan `Mono<T>` para operaciones individuales.
+- Uso de **streams reactivos** para el manejo de **backpressure**.
+- Operaciones **asíncronas de extremo a extremo (end-to-end)**.
+
+---
+
+# Casos de Uso Implementados
+
+- **FranchiseUseCase:**  
+  Gestión de franquicias.
+
+- **BranchUseCase:**  
+  Gestión de sucursales.
+
+- **ProductUseCase:**  
+  Gestión de productos.
+
+---
+
+# Inyección de Dependencias
+
+Los casos de uso utilizan **inyección por constructor** con **Lombok**:
+
+- Uso de `@RequiredArgsConstructor` para la generación automática de constructores.
+- **Descubrimiento automático de beans** mediante `@ComponentScan`.
+- Dependencias **inmutables** y **testeables**.
+
+---
+
+# Endpoints de la API
+
+## Franquicias
+
+- `GET /franchises` - Listar franquicias
+- `POST /franchises` - Crear franquicia
+- `PUT /franchises/{id}` - Actualizar franquicia
+- `DELETE /franchises/{id}` - Eliminar franquicia
+
+## Sucursales
+
+- `GET /branches` - Listar sucursales
+- `POST /branches` - Crear sucursal
+- `PUT /branches/{id}` - Actualizar sucursal
+- `DELETE /branches/{id}` - Eliminar sucursal
+
+## Productos
+
+- `GET /products` - Listar productos
+- `POST /products` - Crear producto
+- `PUT /products/{id}` - Actualizar producto
+- `DELETE /products/{id}` - Eliminar producto
+
+---
+
+# Tecnologías Utilizadas
+
+- **Spring Boot:** Framework principal.
+- **Project Reactor:** Programación reactiva.
+- **Lombok:** Reducción de código boilerplate.
+- **Gradle:** Gestión de dependencias y construcción.
+- **Clean Architecture:** Patrón arquitectónico base.

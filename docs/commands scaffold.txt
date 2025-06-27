@@ -1,0 +1,13 @@
+gradle ca --package=co.com.nequi.franchise --type=reactive --name=api-franchise --lombok=true --javaVersion=VERSION_21
+
+gradle gm --name franchise
+gradle gm --name branch
+gradle gm --name product
+
+gradle guc --name franchise
+gradle guc --name branch
+gradle guc --name product
+
+gradle generateDrivenAdapter --type=r2dbc
+
+gradle generateEntryPoint --type=webflux

@@ -1,14 +1,38 @@
-##Spring Configuration
 server:
   port: 8080
 spring:
   application:
-    name: api-franchise
+    name: "api-franchise"
   devtools:
     add-properties: false
   h2:
     console:
       enabled: true
-      path: /h2
+      path: "/h2"
   profiles:
-    include:
+    include: null
+adapters:
+  r2dbc:
+    host: "localhost"
+    port: 5432
+    password: "root"
+    database: "postgres"
+    schema: "franchise"
+    username: "postgres"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,prometheus"
+  endpoint:
+    health:
+      probes:
+        enabled: true
+cors:
+  allowed-origins: "http://localhost:4200,http://localhost:8080"
+
+api:
+  endpoint:
+    franchise: "/api/franchise"
+    branch: "/api/branch"
+    product: "/api/product"
