@@ -4,7 +4,11 @@ import co.com.nequi.franchise.model.branch.gateways.BranchRepository;
 import co.com.nequi.franchise.model.product.Product;
 import co.com.nequi.franchise.model.product.gateways.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Comparator;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 public class ProductUseCase {
@@ -33,7 +37,18 @@ public class ProductUseCase {
                     return p;
                 })
                 .flatMap(productRepository::saveProduct);
+    }
 
+    public Flux<Product> getProductsWithMaxStockByBranch() {
+        return branchRepository.findAll()
+                .flatMap(branch -> productRepository.findAllByBranchId(branch.getId())
+                        .collectList()
+                        .mapNotNull(products -> products.stream()
+                                .max(Comparator.comparingInt(Product::getStock))
+                                .orElse(null)
+                        )
+                )
+                .filter(Objects::nonNull);
     }
 
     public Mono<Product> updateProductName(Long id, String name) {

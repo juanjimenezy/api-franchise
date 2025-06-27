@@ -62,4 +62,13 @@ public class ProductHandler {
                 .then(ServerResponse.ok().build())
                 .onErrorResume(error -> ServerResponse.badRequest().bodyValue("Error deleting product: " + error.getMessage()));
     }
+
+    public Mono<ServerResponse> getProductsWithMaxStockByBranch(ServerRequest request) {
+        return productUseCase.getProductsWithMaxStockByBranch()
+                .collectList()
+                .flatMap(products -> ServerResponse.ok().bodyValue(products))
+                .switchIfEmpty(ServerResponse.notFound().build())
+                .onErrorResume(error -> ServerResponse.badRequest().bodyValue("Error retrieving products with max stock: " + error.getMessage()));
+    }
+
 }

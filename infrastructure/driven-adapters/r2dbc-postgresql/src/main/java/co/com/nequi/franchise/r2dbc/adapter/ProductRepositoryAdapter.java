@@ -7,6 +7,7 @@ import co.com.nequi.franchise.r2dbc.helper.ReactiveAdapterOperations;
 import co.com.nequi.franchise.r2dbc.repository.ProductReactiveRepository;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
@@ -14,6 +15,11 @@ public class ProductRepositoryAdapter extends ReactiveAdapterOperations<Product 
 
     public ProductRepositoryAdapter(ProductReactiveRepository repository, ObjectMapper mapper) {
         super(repository, mapper, d -> mapper.map(d, Product.class));
+    }
+
+    @Override
+    public Flux<Product> findAllByBranchId(Long idBranch) {
+        return repository.findAllByBranchId(idBranch);
     }
 
     @Override
