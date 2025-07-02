@@ -3,7 +3,6 @@ package co.com.nequi.franchise.api.handler;
 import co.com.nequi.franchise.model.product.Product;
 import co.com.nequi.franchise.usecase.product.ProductUseCase;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
