@@ -1,1 +1,5 @@
 db_password = "rootpassword_db"
+ecr_repository_name = "franchise-ecr-repo"
+environment = "dev"
+project_name = "franchise-api"
+ecs_task_execution_role_name = "ecsTaskExecutionRole"
