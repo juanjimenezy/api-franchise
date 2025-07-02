@@ -13,10 +13,10 @@ spring:
     include: null
 adapters:
   r2dbc:
-    host: "localhost"
+    host: "franchise-db.ccvs4uuuy7fx.us-east-1.rds.amazonaws.com"
     port: 5432
-    password: "root"
-    database: "postgres"
+    password: "rootpassword_db"
+    database: "franchise"
     schema: "franchise"
     username: "postgres"
 management:

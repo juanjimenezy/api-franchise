@@ -130,3 +130,12 @@ pitestReportAggregate {
 tasks.named('wrapper') {
     gradleVersion = '8.14'
 }
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'co.com.nequi.franchise.MainApplication',
+                'Start-Class': 'co.com.nequi.franchise.MainApplication'
+        )
+    }
+}
