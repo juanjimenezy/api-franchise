@@ -30,10 +30,42 @@ module "database" {
   sg_id       = module.security.rds_sg_id
 }
 
+module "ecr" {
+  source = "./modules/ecr"
+  ecr_repository_name = var.ecr_repository_name
+  environment = var.environment
+  project_name = var.project_name
+}
+
+module "iam" {
+  source = "./modules/iam"
+  iam_task_execution_role_name = var.ecs_task_execution_role_name
+}
+
+module "ecs" {
+  subnet_ids        = module.network.subnet_ids
+  ecs_sg_id         = module.security.ecs_sg_id
+  vpc_id            = module.network.vpc_id
+  source            = "./modules/ecs"
+  db_address        = module.database.rds_endpoint
+  db_port           = module.database.rds_port
+  db_password       = var.db_password
+  execution_role_arn = module.iam.ecs_task_execution_role_arn
+  ecr_repository_url = module.ecr.ecr_repository_url
+}
+
+output "ecr_repository_url" {
+  value = module.ecr.ecr_repository_url
+}
+
 output "rds_endpoint" {
   value = module.database.rds_endpoint
 }
 
 output "rds_port" {
   value = module.database.rds_port
+}
+
+output "alb_dns_name" {
+  value = module.ecs.alb_dns_name
 }
