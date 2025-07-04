@@ -40,7 +40,7 @@ public class RouterRest {
     @Value("${api.endpoint.product}")
     private String endpointApiProduct;
 
-    private static String PATH_VARIABLE_ID = "/{id}";
+    private static final String PATH_VARIABLE_ID = "/{id}";
 
     @Bean
     @RouterOperations({

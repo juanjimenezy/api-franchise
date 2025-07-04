@@ -39,7 +39,7 @@ public class R2dbcDatabaseInitializer implements ApplicationListener<ContextRefr
                         .flatMap(result -> Mono.from(result.map((row, metadata) -> row.get("schema_name"))))
                         .hasElement()
                         .flatMap(exists -> {
-                            if (exists) {
+                            if (Boolean.TRUE.equals(exists)) {
                                 log.info("El esquema 'franchise' ya existe. No se ejecuta export.sql.");
                                 return Mono.empty();
                             }

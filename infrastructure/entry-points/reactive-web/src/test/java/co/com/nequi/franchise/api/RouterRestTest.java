@@ -25,7 +25,6 @@ class RouterRestTest {
         BranchHandler branchHandler = Mockito.mock(BranchHandler.class);
         ProductHandler productHandler = Mockito.mock(ProductHandler.class);
 
-        // Mockear todos los handlers para devolver un ServerResponse.ok()
         Mockito.when(franchiseHandler.getFranchiseById(any())).thenReturn(Mono.just(Objects.requireNonNull(ServerResponse.ok().build().block())));
         Mockito.when(franchiseHandler.createFranchise(any())).thenReturn(Mono.just(Objects.requireNonNull(ServerResponse.ok().build().block())));
         Mockito.when(franchiseHandler.updateFranchiseName(any())).thenReturn(Mono.just(Objects.requireNonNull(ServerResponse.ok().build().block())));
@@ -43,10 +42,9 @@ class RouterRestTest {
         Mockito.when(productHandler.getProductsByFranchiseIdAndMaxStock(any())).thenReturn(Mono.just(Objects.requireNonNull(ServerResponse.ok().build().block())));
 
         RouterRest routerRest = new RouterRest();
-        // Inyectar los endpoints manualmente
-        setField(routerRest, "endpointApiFranchise", "/franchise");
-        setField(routerRest, "endpointApiBranch", "/branch");
-        setField(routerRest, "endpointApiProduct", "/product");
+        setField(routerRest, "endpointApiFranchise", "/api/franchise");
+        setField(routerRest, "endpointApiBranch", "/api/branch");
+        setField(routerRest, "endpointApiProduct", "/api/product");
 
         webTestClient = WebTestClient.bindToRouterFunction(
                 routerRest.routerFunction(franchiseHandler, branchHandler, productHandler)
@@ -65,24 +63,21 @@ class RouterRestTest {
 
     @Test
     void allRoutesAreConfigured() {
-        // Franchise
-        webTestClient.get().uri("/franchise/1").exchange().expectStatus().isOk();
-        webTestClient.post().uri("/franchise").contentType(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
-        webTestClient.put().uri("/franchise/1").contentType(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
+        webTestClient.get().uri("/api/franchise/1").exchange().expectStatus().isOk();
+        webTestClient.post().uri("/api/franchise").contentType(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
+        webTestClient.put().uri("/api/franchise/1").contentType(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
 
-        // Branch
-        webTestClient.get().uri("/branch/1").exchange().expectStatus().isOk();
-        webTestClient.post().uri("/branch").contentType(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
-        webTestClient.put().uri("/branch/1").contentType(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
+        webTestClient.get().uri("/api/branch/1").exchange().expectStatus().isOk();
+        webTestClient.post().uri("/api/branch").contentType(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
+        webTestClient.put().uri("/api/branch/1").contentType(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
 
-        // Product
-        webTestClient.get().uri("/product/1").exchange().expectStatus().isOk();
-        webTestClient.post().uri("/product").contentType(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
-        webTestClient.post().uri("/product/stock/1").contentType(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
-        webTestClient.delete().uri("/product/1").exchange().expectStatus().isOk();
-        webTestClient.put().uri("/product/1").contentType(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
-        webTestClient.get().uri("/product/maxStock/products").exchange().expectStatus().isOk();
-        webTestClient.get().uri("/product/franchise/maxStock/1").exchange().expectStatus().isOk();
+        webTestClient.get().uri("/api/product/1").exchange().expectStatus().isOk();
+        webTestClient.post().uri("/api/product").contentType(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
+        webTestClient.post().uri("/api/product/1").contentType(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
+        webTestClient.delete().uri("/api/product/1").exchange().expectStatus().isOk();
+        webTestClient.put().uri("/api/product/1").contentType(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
+        webTestClient.get().uri("/api/product/maxStock/products").exchange().expectStatus().isOk();
+        webTestClient.get().uri("/api/product/franchise/maxStock/1").exchange().expectStatus().isOk();
     }
 
 
