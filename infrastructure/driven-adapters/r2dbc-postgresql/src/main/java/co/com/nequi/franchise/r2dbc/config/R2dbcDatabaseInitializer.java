@@ -31,38 +31,45 @@ public class R2dbcDatabaseInitializer implements ApplicationListener<ContextRefr
     public void onApplicationEvent(ContextRefreshedEvent event) {
         ClassPathResource resource = new ClassPathResource("export.sql");
 
-        try {
-            String sql = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))
-                    .lines()
-                    .collect(Collectors.joining("\n"));
+        String checkSchemaSql = "SELECT schema_name FROM information_schema.schemata WHERE schema_name = 'franchise'";
 
-            String[] statements = sql.split(";");
-
-            Mono<Void> execution = Mono.usingWhen(
-                    connectionFactory.create(),
-                    connection -> Flux.fromArray(statements)
-                            .map(String::trim)
-                            .filter(s -> !s.isEmpty())
-                            .flatMap(statementSql -> {
-                                Statement statement = connection.createStatement(statementSql);
-                                return Mono.from(statement.execute()).then();
-                            })
-                            .then(),
-                    Connection::close
-            );
-
-            execution.subscribe(
-                    unused -> {},
-                    error -> {
-                        log.info("❌ Error ejecutando export.sql: " + error.getMessage());
-                        error.printStackTrace();
-                    },
-                    () -> log.info("✔️ export.sql ejecutado exitosamente al arrancar la aplicación.")
-            );
-
-        } catch (Exception e) {
-            log.info("❌ Error leyendo export.sql: " + e.getMessage());
-            e.printStackTrace();
-        }
+        Mono.usingWhen(
+                connectionFactory.create(),
+                connection -> Mono.from(connection.createStatement(checkSchemaSql).execute())
+                        .flatMap(result -> Mono.from(result.map((row, metadata) -> row.get("schema_name"))))
+                        .hasElement()
+                        .flatMap(exists -> {
+                            if (exists) {
+                                log.info("El esquema 'franchise' ya existe. No se ejecuta export.sql.");
+                                return Mono.empty();
+                            }
+                            try {
+                                String sql = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))
+                                        .lines()
+                                        .collect(Collectors.joining("\n"));
+                                String[] statements = sql.split(";");
+                                return Flux.fromArray(statements)
+                                        .map(String::trim)
+                                        .filter(s -> !s.isEmpty())
+                                        .flatMap(statementSql -> {
+                                            Statement statement = connection.createStatement(statementSql);
+                                            return Mono.from(statement.execute()).then();
+                                        })
+                                        .then()
+                                        .doOnSuccess(unused -> log.info("✔️ export.sql ejecutado exitosamente al arrancar la aplicación."));
+                            } catch (Exception e) {
+                                log.info("❌ Error leyendo export.sql: " + e.getMessage());
+                                e.printStackTrace();
+                                return Mono.empty();
+                            }
+                        }),
+                Connection::close
+        ).subscribe(
+                unused -> {},
+                error -> {
+                    log.info("❌ Error ejecutando export.sql: " + error.getMessage());
+                    error.printStackTrace();
+                }
+        );
     }
 }

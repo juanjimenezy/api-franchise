@@ -43,15 +43,14 @@ module "iam" {
 }
 
 module "ecs" {
-  subnet_ids        = module.network.subnet_ids
-  ecs_sg_id         = module.security.ecs_sg_id
-  vpc_id            = module.network.vpc_id
-  source            = "./modules/ecs"
-  db_address        = module.database.rds_endpoint
-  db_port           = module.database.rds_port
-  db_password       = var.db_password
-  execution_role_arn = module.iam.ecs_task_execution_role_arn
-  ecr_repository_url = module.ecr.ecr_repository_url
+  subnet_ids          = module.network.subnet_ids
+  ecs_sg_id           = module.security.ecs_sg_id
+  vpc_id              = module.network.vpc_id
+  source              = "./modules/ecs"
+  rds_endpoint        = module.database.rds_endpoint
+  db_password         = var.db_password
+  execution_role_arn  = module.iam.ecs_task_execution_role_arn
+  ecr_repository_url  = module.ecr.ecr_repository_url
 }
 
 output "ecr_repository_url" {

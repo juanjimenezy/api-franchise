@@ -58,6 +58,16 @@ resource "aws_ecs_task_definition" "task" {
       containerPort = 8080
       hostPort      = 8080
     }]
+    environment = [
+      {
+        name  = "DB_HOST"
+        value = var.rds_endpoint
+      },
+      {
+        name  = "DB_PASSWORD"
+        value = var.db_password
+      }
+    ]
     logConfiguration = {
       logDriver = "awslogs"
       options = {

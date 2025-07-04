@@ -13,14 +13,9 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "db_address" {
+variable "rds_endpoint" {
   description = "Database endpoint address"
   type        = string
-}
-
-variable "db_port" {
-  description = "Database port"
-  type        = number
 }
 
 variable "db_password" {

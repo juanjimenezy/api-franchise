@@ -1,7 +1,9 @@
 package co.com.nequi.franchise.api;
 
-import co.com.nequi.franchise.api.dto.BranchRequestDTO;
-import co.com.nequi.franchise.api.dto.FranchiseRequestDTO;
+import co.com.nequi.franchise.api.dto.request.BranchRequestDTO;
+import co.com.nequi.franchise.api.dto.request.FranchiseRequestDTO;
+import co.com.nequi.franchise.api.dto.response.BranchResponseDTO;
+import co.com.nequi.franchise.api.dto.response.FranchiseResponseDTO;
 import co.com.nequi.franchise.api.handler.BranchHandler;
 import co.com.nequi.franchise.api.handler.FranchiseHandler;
 import co.com.nequi.franchise.api.handler.ProductHandler;
@@ -38,6 +40,8 @@ public class RouterRest {
     @Value("${api.endpoint.product}")
     private String endpointApiProduct;
 
+    private static String PATH_VARIABLE_ID = "/{id}";
+
     @Bean
     @RouterOperations({
             @RouterOperation(
@@ -53,13 +57,13 @@ public class RouterRest {
                                     @Parameter(in = ParameterIn.PATH, name = "id", description = "ID de la franquicia")
                             },
                             responses = {
-                                    @ApiResponse(responseCode = "200", description = "Franquicia encontrada", content = @Content(schema = @Schema(implementation = Franchise.class))),
+                                    @ApiResponse(responseCode = "200", description = "Franquicia encontrada", content = @Content(schema = @Schema(implementation = FranchiseResponseDTO.class))),
                                     @ApiResponse(responseCode = "404", description = "No encontrada")
                             }
                     )
             ),
             @RouterOperation(
-                    path = "/api/franchise/",
+                    path = "/api/franchise",
                     produces = { "application/json" },
                     method = RequestMethod.POST,
                     beanClass = FranchiseHandler.class,
@@ -70,7 +74,7 @@ public class RouterRest {
                             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                     description = "Datos de la franquicia",
                                     required = true,
-                                    content = @Content(schema = @Schema(implementation = Franchise.class))
+                                    content = @Content(schema = @Schema(implementation = FranchiseRequestDTO.class))
                             ),
                             responses = {
                                     @ApiResponse(responseCode = "200", description = "Franquicia creada", content = @Content(schema = @Schema(implementation = Franchise.class))),
@@ -96,7 +100,7 @@ public class RouterRest {
                                     content = @Content(schema = @Schema(implementation = FranchiseRequestDTO.class))
                             ),
                             responses = {
-                                    @ApiResponse(responseCode = "200", description = "Franquicia actualizada", content = @Content(schema = @Schema(implementation = Franchise.class))),
+                                    @ApiResponse(responseCode = "200", description = "Franquicia actualizada", content = @Content(schema = @Schema(implementation = FranchiseResponseDTO.class))),
                                     @ApiResponse(responseCode = "400", description = "Franquicia no existe o error en la solicitud")
                             }
                     )
@@ -114,13 +118,13 @@ public class RouterRest {
                                     @Parameter(in = ParameterIn.PATH, name = "id", description = "ID de la sucursal")
                             },
                             responses = {
-                                    @ApiResponse(responseCode = "200", description = "Sucursal encontrada", content = @Content(schema = @Schema(implementation = Branch.class))),
+                                    @ApiResponse(responseCode = "200", description = "Sucursal encontrada", content = @Content(schema = @Schema(implementation = BranchResponseDTO.class))),
                                     @ApiResponse(responseCode = "404", description = "No encontrada")
                             }
                     )
             ),
             @RouterOperation(
-                    path = "/api/branch/",
+                    path = "/api/branch",
                     produces = { "application/json" },
                     method = RequestMethod.POST,
                     beanClass = BranchHandler.class,
@@ -134,7 +138,7 @@ public class RouterRest {
                                     content = @Content(schema = @Schema(implementation = Branch.class))
                             ),
                             responses = {
-                                    @ApiResponse(responseCode = "200", description = "Sucursal creada", content = @Content(schema = @Schema(implementation = Branch.class))),
+                                    @ApiResponse(responseCode = "200", description = "Sucursal creada", content = @Content(schema = @Schema(implementation = BranchResponseDTO.class))),
                                     @ApiResponse(responseCode = "400", description = "Error al crear la sucursal")
                             }
                     )
@@ -157,7 +161,7 @@ public class RouterRest {
                                     content = @Content(schema = @Schema(implementation = BranchRequestDTO.class))
                             ),
                             responses = {
-                                    @ApiResponse(responseCode = "200", description = "Sucursal actualizada", content = @Content(schema = @Schema(implementation = Branch.class))),
+                                    @ApiResponse(responseCode = "200", description = "Sucursal actualizada", content = @Content(schema = @Schema(implementation = BranchResponseDTO.class))),
                                     @ApiResponse(responseCode = "400", description = "Sucursal no existe o error en la solicitud")
                             }
                     )
@@ -181,7 +185,7 @@ public class RouterRest {
                     )
             ),
             @RouterOperation(
-                    path = "/api/product/",
+                    path = "/api/product",
                     produces = { "application/json" },
                     method = RequestMethod.POST,
                     beanClass = ProductHandler.class,
@@ -297,19 +301,19 @@ public class RouterRest {
             )
     })
     public RouterFunction<ServerResponse> routerFunction(FranchiseHandler franchiseHandler, BranchHandler branchHandler, ProductHandler productHandler) {
-        return route(GET(endpointApiFranchise.concat("/{id}")), franchiseHandler::getFranchiseById)
+        return route(GET(endpointApiFranchise.concat(PATH_VARIABLE_ID)), franchiseHandler::getFranchiseById)
                 .andRoute(POST(endpointApiFranchise), franchiseHandler::createFranchise)
-                .andRoute(PUT(endpointApiFranchise.concat("/{id}")), franchiseHandler::updateFranchiseName)
+                .andRoute(PUT(endpointApiFranchise.concat(PATH_VARIABLE_ID)), franchiseHandler::updateFranchiseName)
 
-                .andRoute(GET(endpointApiBranch.concat("/{id}")), branchHandler::getBranchById)
+                .andRoute(GET(endpointApiBranch.concat(PATH_VARIABLE_ID)), branchHandler::getBranchById)
                 .andRoute(POST(endpointApiBranch), branchHandler::createBranch)
-                .andRoute(PUT(endpointApiBranch.concat("/{id}")), branchHandler::updateBranchName)
+                .andRoute(PUT(endpointApiBranch.concat(PATH_VARIABLE_ID)), branchHandler::updateBranchName)
 
-                .andRoute(GET(endpointApiProduct.concat("/{id}")), productHandler::getProductById)
+                .andRoute(GET(endpointApiProduct.concat(PATH_VARIABLE_ID)), productHandler::getProductById)
                 .andRoute(POST(endpointApiProduct), productHandler::createProduct)
-                .andRoute(POST(endpointApiProduct.concat("/stock/{id}")), productHandler::changeProductAmount)
-                .andRoute(DELETE(endpointApiProduct.concat("/{id}")), productHandler::deleteProduct)
-                .andRoute(PUT(endpointApiProduct.concat("/{id}")), productHandler::updateProductName)
+                .andRoute(POST(endpointApiProduct.concat(PATH_VARIABLE_ID)), productHandler::changeProductAmount)
+                .andRoute(DELETE(endpointApiProduct.concat(PATH_VARIABLE_ID)), productHandler::deleteProduct)
+                .andRoute(PUT(endpointApiProduct.concat(PATH_VARIABLE_ID)), productHandler::updateProductName)
                 .andRoute(GET(endpointApiProduct.concat("/maxStock/products")), productHandler::getProductsWithMaxStockByBranch)
                 .andRoute(GET(endpointApiProduct.concat("/franchise/maxStock/{id}")), productHandler::getProductsByFranchiseIdAndMaxStock);
     }
