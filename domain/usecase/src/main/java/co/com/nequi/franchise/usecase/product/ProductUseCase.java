@@ -27,15 +27,12 @@ public class ProductUseCase {
 
     public Mono<Void> deleteProduct(Long idBranch, Long idProduct) {
         return branchRepository.findById(idBranch)
-                .flatMap( branch -> productRepository.deleteProduct(idProduct));
+                .flatMap(branch -> productRepository.deleteProduct(idProduct));
     }
 
-    public Mono<Product> changueAmount(Long idProduct, Integer amount ) {
+    public Mono<Product> changueAmount(Long idProduct, Integer amount) {
         return productRepository.findById(idProduct)
-                .map(p -> {
-                    p.setStock(amount);
-                    return p;
-                })
+                .map(p -> p.toBuilder().stock(amount).build())
                 .flatMap(productRepository::saveProduct);
     }
 
@@ -64,8 +61,8 @@ public class ProductUseCase {
     public Mono<Product> updateProductName(Long id, String name) {
         return productRepository.findById(id)
                 .flatMap(product -> {
-                    product.setName(name);
-                    return productRepository.saveProduct(product);
+                    Product newProduct = product.toBuilder().name(name).build();
+                    return productRepository.saveProduct(newProduct);
                 });
     }
 

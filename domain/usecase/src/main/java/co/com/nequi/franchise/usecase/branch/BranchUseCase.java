@@ -18,16 +18,21 @@ public class BranchUseCase {
     public Mono<Branch> saveBranch(Branch branch) {
         return franchiseRepository.findById(branch.getFranchiseId())
                 .flatMap(franchise -> {
-                    branch.setFranchiseId(franchise.getId());
-                    return branchRepository.saveBranch(branch);
-                });
+                    Branch newBranch = branch.toBuilder()
+                            .franchiseId(franchise.getId())
+                            .build();
+                    return branchRepository.saveBranch(newBranch);
+                })
+                .switchIfEmpty(Mono.error(new RuntimeException("Franchise not exist")));
     }
 
     public Mono<Branch> updateBranch(Long id, String branchName) {
         return branchRepository.findById(id)
                 .flatMap(existingBranch -> {
-                    existingBranch.setName(branchName);
-                    return branchRepository.saveBranch(existingBranch);
+                    Branch branch = existingBranch.toBuilder()
+                            .name(branchName)
+                            .build();
+                    return branchRepository.saveBranch(branch);
                 });
     }
 

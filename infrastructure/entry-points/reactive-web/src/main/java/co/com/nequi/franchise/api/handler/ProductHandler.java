@@ -3,6 +3,7 @@ package co.com.nequi.franchise.api.handler;
 import co.com.nequi.franchise.model.product.Product;
 import co.com.nequi.franchise.usecase.product.ProductUseCase;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -10,6 +11,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ProductHandler {
 
     private final ProductUseCase productUseCase;
@@ -64,6 +66,7 @@ public class ProductHandler {
     }
 
     public Mono<ServerResponse> getProductsWithMaxStockByBranch(ServerRequest request) {
+        log.info("path::" + request.path());
         return productUseCase.getProductsWithMaxStockByBranch()
                 .collectList()
                 .flatMap(products -> ServerResponse.ok().bodyValue(products))

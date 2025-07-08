@@ -1,18 +1,22 @@
 package co.com.nequi.franchise.api.handler;
 
-import co.com.nequi.franchise.api.dto.FranchiseRequestDTO;
+import co.com.nequi.franchise.api.dto.request.FranchiseRequestDTO;
+import co.com.nequi.franchise.api.dto.response.FranchiseResponseDTO;
 import co.com.nequi.franchise.model.franchise.Franchise;
 import co.com.nequi.franchise.usecase.franchise.FranchiseUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class FranchiseHandlerTest {
@@ -25,10 +29,13 @@ class FranchiseHandlerTest {
 
     private FranchiseHandler franchiseHandler;
 
+    private ObjectMapper objectMapper;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        franchiseHandler = new FranchiseHandler(franchiseUseCase);
+        objectMapper = mock(ObjectMapper.class);
+        franchiseHandler = new FranchiseHandler(franchiseUseCase, objectMapper);
     }
 
     @Test
@@ -36,6 +43,9 @@ class FranchiseHandlerTest {
         when(serverRequest.pathVariable("id")).thenReturn("1");
         Franchise franchise = new Franchise();
         when(franchiseUseCase.getFranchise(1L)).thenReturn(Mono.just(franchise));
+
+        when(objectMapper.map(any(Franchise.class), eq(FranchiseResponseDTO.class)))
+                .thenReturn(new FranchiseResponseDTO());
 
         Mono<ServerResponse> response = franchiseHandler.getFranchiseById(serverRequest);
 
@@ -73,6 +83,9 @@ class FranchiseHandlerTest {
         Franchise franchise = new Franchise();
         when(serverRequest.bodyToMono(Franchise.class)).thenReturn(Mono.just(franchise));
         when(franchiseUseCase.saveFranchise(franchise)).thenReturn(Mono.just(franchise));
+
+        when(objectMapper.map(any(Franchise.class), eq(FranchiseResponseDTO.class)))
+                .thenReturn(new FranchiseResponseDTO());
 
         Mono<ServerResponse> response = franchiseHandler.createFranchise(serverRequest);
 
@@ -112,6 +125,9 @@ class FranchiseHandlerTest {
         when(serverRequest.bodyToMono(FranchiseRequestDTO.class)).thenReturn(Mono.just(dto));
         Franchise franchise = new Franchise();
         when(franchiseUseCase.updateNameFranchise(1L, "NuevoNombre")).thenReturn(Mono.just(franchise));
+
+        when(objectMapper.map(any(Franchise.class), eq(FranchiseResponseDTO.class)))
+                .thenReturn(new FranchiseResponseDTO());
 
         Mono<ServerResponse> response = franchiseHandler.updateFranchiseName(serverRequest);
 

@@ -21,8 +21,8 @@ public class FranchiseUseCase {
     public Mono<Franchise> updateNameFranchise(Long id, String newName) {
         return franchiseRepository.findById(id)
                 .flatMap(franchise -> {
-                    franchise.setName(newName);
-                    return franchiseRepository.saveFranchise(franchise);
+                    Franchise franchiseToUpdate = franchise.toBuilder().name(newName).build();
+                    return franchiseRepository.saveFranchise(franchiseToUpdate);
                 });
     }
 
