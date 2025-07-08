@@ -7,7 +7,6 @@ import co.com.nequi.franchise.api.dto.response.FranchiseResponseDTO;
 import co.com.nequi.franchise.api.handler.BranchHandler;
 import co.com.nequi.franchise.api.handler.FranchiseHandler;
 import co.com.nequi.franchise.api.handler.ProductHandler;
-import co.com.nequi.franchise.model.branch.Branch;
 import co.com.nequi.franchise.model.franchise.Franchise;
 import co.com.nequi.franchise.model.product.Product;
 import io.swagger.v3.oas.annotations.Operation;
@@ -135,7 +134,7 @@ public class RouterRest {
                             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                     description = "Datos de la sucursal",
                                     required = true,
-                                    content = @Content(schema = @Schema(implementation = Branch.class))
+                                    content = @Content(schema = @Schema(implementation = BranchRequestDTO.class))
                             ),
                             responses = {
                                     @ApiResponse(responseCode = "200", description = "Sucursal creada", content = @Content(schema = @Schema(implementation = BranchResponseDTO.class))),

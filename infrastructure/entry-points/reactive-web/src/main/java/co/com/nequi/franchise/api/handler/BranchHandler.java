@@ -27,7 +27,8 @@ public class BranchHandler {
                 .flatMap(branchUseCase::getBranchById)
                 .flatMap(branch -> ServerResponse.ok().bodyValue(toBranchResponseDTO(branch)))
                 .switchIfEmpty(ServerResponse.badRequest().bodyValue("Branch not exist"))
-                .onErrorResume(error -> ServerResponse.badRequest().bodyValue("Error retrieving branch: " + error.getMessage()));
+                .onErrorResume(RuntimeException.class, error -> ServerResponse.badRequest().bodyValue("Error retrieving branch: " + error.getMessage()))
+                .onErrorResume(Exception.class, error -> ServerResponse.badRequest().bodyValue("Error retrieving branch: " + error.getMessage()));
     }
 
     public Mono<ServerResponse> createBranch(ServerRequest serverRequest) {
