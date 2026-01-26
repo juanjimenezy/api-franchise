@@ -45,7 +45,8 @@ class FranchiseUseCaseTest {
         Franchise franchise = new Franchise();
         franchise.setName("OldName");
         Mockito.when(franchiseRepository.findById(1L)).thenReturn(Mono.just(franchise));
-        Mockito.when(franchiseRepository.saveFranchise(franchise)).thenReturn(Mono.just(franchise));
+        Mockito.when(franchiseRepository.saveFranchise(Mockito.any(Franchise.class)))
+                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
         StepVerifier.create(franchiseUseCase.updateNameFranchise(1L, "NewName"))
                 .expectNextMatches(f -> "NewName".equals(f.getName()))
