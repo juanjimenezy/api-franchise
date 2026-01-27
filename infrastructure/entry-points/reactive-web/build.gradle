@@ -6,4 +6,7 @@ dependencies {
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.3.0'
     implementation 'org.reactivecommons.utils:object-mapper-api:0.1.0'
+
+    implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.1.0'
+    implementation 'io.github.resilience4j:resilience4j-reactor:2.1.0'
 }

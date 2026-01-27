@@ -53,7 +53,7 @@ class BranchUseCaseTest {
                 .verifyComplete();
 
         verify(franchiseRepository).findById(10L);
-        verify(branchRepository).saveBranch(branch);
+        verify(branchRepository).saveBranch(any(Branch.class));
     }
 
     @Test

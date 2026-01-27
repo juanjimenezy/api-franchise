@@ -27,3 +27,7 @@ public class FranchiseUseCase {
     }
 
 }
+
+//manifiestos
+//multi stage building
+//sqs fifo starnd
