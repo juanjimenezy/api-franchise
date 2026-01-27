@@ -41,7 +41,7 @@ resource "aws_security_group" "rds_sg" {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    cidr_blocks = ["161.10.144.35/32"]
+    cidr_blocks = ["161.10.140.79/32"]
   }
 
   ingress {

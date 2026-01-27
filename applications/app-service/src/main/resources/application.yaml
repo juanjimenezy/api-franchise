@@ -36,3 +36,13 @@ api:
     franchise: "/api/franchise"
     branch: "/api/branch"
     product: "/api/product"
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      franchiseService:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s

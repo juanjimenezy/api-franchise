@@ -4,6 +4,8 @@ import co.com.nequi.franchise.api.dto.request.FranchiseRequestDTO;
 import co.com.nequi.franchise.api.dto.response.FranchiseResponseDTO;
 import co.com.nequi.franchise.model.franchise.Franchise;
 import co.com.nequi.franchise.usecase.franchise.FranchiseUseCase;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -14,6 +16,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -35,22 +38,24 @@ class FranchiseHandlerTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         objectMapper = mock(ObjectMapper.class);
-        franchiseHandler = new FranchiseHandler(franchiseUseCase, objectMapper);
+        CircuitBreakerRegistry circuitBreakerRegistry = mock(CircuitBreakerRegistry.class);
+        CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults("franchiseService");
+        when(circuitBreakerRegistry.circuitBreaker(any())).thenReturn(circuitBreaker);
+        franchiseHandler = new FranchiseHandler(franchiseUseCase, objectMapper,circuitBreakerRegistry);
     }
 
     @Test
     void getFranchiseById_success() {
         when(serverRequest.pathVariable("id")).thenReturn("1");
         Franchise franchise = new Franchise();
+        FranchiseResponseDTO responseDTO = new FranchiseResponseDTO();
         when(franchiseUseCase.getFranchise(1L)).thenReturn(Mono.just(franchise));
-
-        when(objectMapper.map(any(Franchise.class), eq(FranchiseResponseDTO.class)))
-                .thenReturn(new FranchiseResponseDTO());
+        when(objectMapper.map(franchise, FranchiseResponseDTO.class)).thenReturn(responseDTO);
 
         Mono<ServerResponse> response = franchiseHandler.getFranchiseById(serverRequest);
 
         StepVerifier.create(response)
-                .expectNextMatches(r -> r.statusCode().is2xxSuccessful())
+                .assertNext(r -> assertTrue(r.statusCode().is2xxSuccessful(), "Status debe ser 2xx"))
                 .verifyComplete();
     }
 
@@ -81,16 +86,16 @@ class FranchiseHandlerTest {
     @Test
     void createFranchise_success() {
         Franchise franchise = new Franchise();
+        FranchiseResponseDTO responseDTO = new FranchiseResponseDTO();
+
         when(serverRequest.bodyToMono(Franchise.class)).thenReturn(Mono.just(franchise));
         when(franchiseUseCase.saveFranchise(franchise)).thenReturn(Mono.just(franchise));
-
-        when(objectMapper.map(any(Franchise.class), eq(FranchiseResponseDTO.class)))
-                .thenReturn(new FranchiseResponseDTO());
+        when(objectMapper.map(franchise, FranchiseResponseDTO.class)).thenReturn(responseDTO);
 
         Mono<ServerResponse> response = franchiseHandler.createFranchise(serverRequest);
 
         StepVerifier.create(response)
-                .expectNextMatches(r -> r.statusCode().is2xxSuccessful())
+                .assertNext(r -> assertTrue(r.statusCode().is2xxSuccessful(), "Status debe ser 2xx"))
                 .verifyComplete();
     }
 
@@ -124,15 +129,14 @@ class FranchiseHandlerTest {
         dto.setName("NuevoNombre");
         when(serverRequest.bodyToMono(FranchiseRequestDTO.class)).thenReturn(Mono.just(dto));
         Franchise franchise = new Franchise();
+        FranchiseResponseDTO responseDTO = new FranchiseResponseDTO();
         when(franchiseUseCase.updateNameFranchise(1L, "NuevoNombre")).thenReturn(Mono.just(franchise));
-
-        when(objectMapper.map(any(Franchise.class), eq(FranchiseResponseDTO.class)))
-                .thenReturn(new FranchiseResponseDTO());
+        when(objectMapper.map(franchise, FranchiseResponseDTO.class)).thenReturn(responseDTO);
 
         Mono<ServerResponse> response = franchiseHandler.updateFranchiseName(serverRequest);
 
         StepVerifier.create(response)
-                .expectNextMatches(r -> r.statusCode().is2xxSuccessful())
+                .assertNext(r -> assertTrue(r.statusCode().is2xxSuccessful(), "Status debe ser 2xx"))
                 .verifyComplete();
     }
 
